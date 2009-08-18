@@ -38,6 +38,8 @@ class Universe:
     def show(self):
         self.repres.show()
 
-u=Universe(3,3)
+u=Universe(10,10)
 
+u.show()
+u.evolve()
 u.show()
