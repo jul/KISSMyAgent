@@ -9,8 +9,13 @@ class matrix:
     def __init__(self,size_x,size_y):
         self.size_y=size_y
         self.size_x=size_x
-        for i in range(0,size_x*size_y):
+        for i in range(0,size_x*size_y  ):
             self.matrix.append(None)
+
+    def get_rand(self):
+        from random import randint 
+
+        return self.matrix[ randint(0,self.size_y * self.size_x -1 ) ]
 
     def get(self,x,y):
         return self.matrix[y*self.size_x+x]
