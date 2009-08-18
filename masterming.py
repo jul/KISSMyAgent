@@ -7,6 +7,9 @@ class Universe:
     matrix=None
     repres=None
     def __init__(self,size_x,size_y,**args):
+        from random import Random as Rand
+        rand=Rand().randint
+        pers=[ "only_take" , "boy_scout" ] 
         self.repres=Representation()
         for k in args.keys():
             setattr(self,k,args[k])
@@ -17,7 +20,13 @@ class Universe:
                   self.matrix.set(
                                 i,j,
                                 Agent(x=i ,y=j ,
-                                state= (i+j) % 3 > 0 ,repres=self.repres)
+                                        repres=self.repres,
+                                        personality = pers[ 
+                                            ## a mettre en param
+                                            rand(0,1) 
+                                        ],
+                                        utility = 100,
+                                    ),
                                 )
                   self.matrix.get(i,j).plot()
         for i in range(0,size_x):
@@ -31,7 +40,7 @@ class Universe:
                             )
                         )
 
-                self.matrix.get(i,j).neighbors(neigb)
+                self.matrix.get(i,j).neighbors=neigb
 
         
 
