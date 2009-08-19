@@ -67,16 +67,14 @@ class Agent:
             print msg
 
     def interaction(self):
-        from random import Random as rand
+        from random import choice
         if not self.has_good_memorie():
             return False
-        if self.personality == "only_take":
-            self.debug(" on ne fait pas de commerce (pas fou)")
+        #if self.personality == "only_take":
+        #    self.debug(" on ne fait pas de commerce (pas fou)")
             
-            return False
-        a_rand_neighbor=self.neighbors[ 
-            rand().randint(0,len(self.neighbors) - 1 )
-        ]
+         #   return False
+        a_rand_neighbor=choice(self.neighbors)
         self.debug("amount before transaction with %d : %d" % ( 
             a_rand_neighbor.id,
             self.utility
@@ -99,10 +97,11 @@ class Agent:
         ### et je retourne le montant  ou pas 
         if self.personality == "only_take":
             # je me casse en courant
-            return -amount
+
+            return 0 
         else:
             ### je prend de mon larre feuille
-            self.utility-=self.added_value_per_transaction
+            self.utility-=amount
             ### et je paie
             return self.added_value_per_transaction + amount
         self.plot()

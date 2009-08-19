@@ -48,14 +48,14 @@ class Universe:
         self.repres.draw()
     def show(self):
         self.repres.show()
-x=20
-y=20
+x=10
+y=10
 u=Universe(x,y)
 res=dict()
 for k in Agent.personalities:
     res[k]=[]
 
-for i in range(0, 10000):
+for i in range(0, 1000):
     u.matrix.get_rand().interaction()
     if ( i % 500 == 0):
         u.draw()    
