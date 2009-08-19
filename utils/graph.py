@@ -9,7 +9,7 @@ class Representation:
     plt=None
     def __init__(self,**settings):
         plt.ion()
-        fig=plt.figure(figsize=(10,10))
+        fig=plt.figure(figsize=(15,10))
         self.canvas=fig.add_subplot(1,2,1)
         self.graph=fig.add_subplot(1,2,2)
         for k in settings.keys():

@@ -15,7 +15,7 @@ class Agent:
     memory=dict()
     transaction_amount=10
     max_utility=0
-    added_value_per_transaction=1
+    added_value_per_transaction=0
     pers_color_mask= dict( 
         boy_scout = 0x0000000FF00 ,
         only_take = 0x00000FF0000,
@@ -33,11 +33,15 @@ class Agent:
 
     def plot(self):
          
-        color = ( 
-            int (   0xffffff  / Agent.max_utility * self.utility) 
-                & 
-            Agent.pers_color_mask[ self.personality ]
+        color = (  
+                 (
+                    0xff -
+                    int (   ( 0xff  / Agent.max_utility ) * self.utility) 
+                ) 
+                |  
+             Agent.pers_color_mask[ self.personality ] 
             )
+            
         print " color : #%06x\n" % color
         self.repres.dot(self.x,self.y, "#%06x" % color)
 
@@ -66,6 +70,10 @@ class Agent:
         from random import Random as rand
         if not self.has_good_memorie():
             return False
+        if self.personality == "only_take":
+            self.debug(" on ne fait pas de commerce (pas fou)")
+            
+            return False
         a_rand_neighbor=self.neighbors[ 
             rand().randint(0,len(self.neighbors) - 1 )
         ]
@@ -85,12 +93,18 @@ class Agent:
         self.plot()
         
     def transaction(self,amount):
+        ## je prend l'objet 
         self.utility+=amount
         self.debug("transaction made I get %d" % amount)
+        ### et je retourne le montant  ou pas 
         if self.personality == "only_take":
-            return 0
+            # je me casse en courant
+            return -amount
         else:
-            return self.added_value_per_transaction * amount
+            ### je prend de mon larre feuille
+            self.utility-=self.added_value_per_transaction
+            ### et je paie
+            return self.added_value_per_transaction + amount
         self.plot()
 
 

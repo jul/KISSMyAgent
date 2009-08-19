@@ -24,7 +24,7 @@ class Universe:
                                         repres=self.repres,
                                         personality = pers[ 
                                             ## a mettre en param
-                                            rand(0,1) 
+                                            rand(0,1 )
                                         ],
                                         utility = 100,
                                     ),
@@ -44,26 +44,25 @@ class Universe:
                 self.matrix.get(i,j).neighbors=neigb
 
         
-
     def draw(self):
         self.repres.draw()
     def show(self):
         self.repres.show()
-
-u=Universe(10,10)
+x=20
+y=20
+u=Universe(x,y)
 res=dict()
 for k in Agent.personalities:
     res[k]=[]
 
-for i in range(0, 1000):
+for i in range(0, 10000):
     u.matrix.get_rand().interaction()
-    u.draw()    
+    if ( i % 500 == 0):
+        u.draw()    
     res_temp=dict()
     for k in Agent.personalities:
         res_temp[k]=0
-    print u.matrix.matrix
-    for agent in u.matrix.matrix[0:100]:
-        print agent
+    for agent in u.matrix.matrix[0:x*y]:
         res_temp[agent.personality]= res_temp[agent.personality] + agent.utility
 
     u.repres.graph.clear()
