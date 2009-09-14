@@ -68,11 +68,9 @@ class Agent:
 
     def interaction(self):
         from random import choice
-        if not self.has_good_memorie():
-            return False
-        #if self.personality == "only_take":
-        #    self.debug(" on ne fait pas de commerce (pas fou)")
-            
+        if self.personality == "only_take":
+            self.debug(" on ne fait pas de commerce (pas fou)")
+           
          #   return False
         a_rand_neighbor=choice(self.neighbors)
         self.debug("amount before transaction with %d : %d" % ( 
