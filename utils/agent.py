@@ -1,12 +1,14 @@
-#!/usr/bin/python
+#i!/usr/bin/python
 #_*_ unicode _*_
 
+
+
     
-class Agent:
+class MetaAgent:
     stat=None 
-    personality=None
+    personality="naive"
     x=None
-    debug=True
+    to_debug=False
     y=None
     max_id=0
     repres=None
@@ -14,13 +16,10 @@ class Agent:
     id=None
     memory=dict()
     transaction_amount=10
+    personalities=[]
     max_utility=0
-    added_value_per_transaction=0
-    pers_color_mask= dict( 
-        boy_scout = 0x0000000FF00 ,
-        only_take = 0x00000FF0000,
-    ) 
-    personalities = ( "boy_scout", "only_take" ) 
+    added_value_per_transaction=5
+    pers_color_mask= 0x0000FF
     
     def __repr__(self):
         return "<repres : %d,%d,%s>" % (self.x,self.y,self.repres)
@@ -32,30 +31,28 @@ class Agent:
             self.y=y
 
     def plot(self):
-         
-        color = (  
-                 (
-                    0xff -
-                    int (   ( 0xff  / Agent.max_utility ) * self.utility) 
+        self.debug("%d , %d " % (self.utility, self.max_utility) )
+        color = (
+                 ( 0xff - int (   (  1.0 * 0xff  *  self.utility / self.max_utility) ) ) << 8 & 0x00ff00
+                 |  self.pers_color_mask
                 ) 
-                |  
-             Agent.pers_color_mask[ self.personality ] 
-            )
             
-        print " color : #%06x\n" % color
+        self.debug( " color : #%06x\n" % color)
         self.repres.dot(self.x,self.y, "#%06x" % color)
 
     def __init__(self,**settings):
-        Agent.max_id=Agent.max_id+1
-        self.id=Agent.max_id
+        MetaAgent.max_id=MetaAgent.max_id+1
+        self.id=MetaAgent.max_id
         for k in settings.keys():
             setattr(self,k,settings[k])
             #print "%s->%s" % (k,settings[k])
-        Agent.max_utility=max(Agent.max_utility, self.utility)
+        MetaAgent.max_utility=max(MetaAgent.max_utility, self.utility)
+        if self.personality not in self.personalities:
+            self.personalities+=[ self.personality ]
         print "init %s\n" % self
     
     def debug(self,msg=""):
-        if Agent.debug:
+        if self.to_debug:
             msg= "%s(%d,%d) %s :utilisty:%s::%s" % ( 
                self.id, 
                self.x,
@@ -71,14 +68,10 @@ class Agent:
     
     def interaction(self):
         
-        if self.personality == "only_take":
-            self.debug(" on ne fait pas de commerce (pas fou)")
-            return False
-         #   return False
         a_rand_neighbor=self.choose_neighbor()
+        ## est ce que l'on veut faire du commerce avec le voisin ?  
         if(a_rand_neighbor == False):
             return False
-        ## est ce que l'on veut faire du commerce avec le voisin ?  
         self.debug("amount before transaction with %d " % ( a_rand_neighbor.id) )
         ## on retire le montant de la transaction 
         self.utility-=self.transaction_amount
@@ -86,22 +79,15 @@ class Agent:
         ### eventuellement 
         self.utility+=a_rand_neighbor.transaction(self.transaction_amount)
         self.debug("utility after transaction : %d" % self.utility)
-        Agent.max_utility=max(Agent.max_utility, self.utility)
+        MetaAgent.max_utility=max(MetaAgent.max_utility, self.utility)
         
     def transaction(self,amount):
         ## je prend l'objet 
         self.utility+=amount
         self.debug("transaction made I get %d" % amount)
-        ### et je retourne le montant  ou pas 
-        if self.personality == "only_take":
-            # je me casse en courant
-            return 0 
-        else:
-            ### je prend de mon larre feuille
-            self.utility-=amount
-            ### et je paie
-            return self.added_value_per_transaction + amount
-        self.plot()
+        ### je prend de mon larre feuille
+        ### et je paie
+        return self.added_value_per_transaction + amount
 
 
     def __str__(self):
@@ -110,7 +96,27 @@ class Agent:
         if self.utility:
             msg+="%d,%d//id=%d//utility:%s//pers:%s\n" %  (self.x, self.y,self.id, str(self.utility),self.personality)
         return msg
+class BoyScout(MetaAgent):
+    def __init__(self,**kwargs):
+        kwargs["personality"]="BoyScout"
+        print kwargs
+        MetaAgent.__init__(self,**kwargs)
 
-    
+class ToutPourMaGueule(MetaAgent):
+    def __init__(self,**kwargs):
+        kwargs["personality"]="ToutPourMaGueule"
+        kwargs["pers_color_mask"]=0xCC0000
+        MetaAgent.__init__(self,**kwargs)
 
-	    
+    def choose_neighbor(self):
+        self.debug("on fait pas de commerce")
+        return False
+
+    def transaction(self,amount):
+        self.utility+=amount
+        MetaAgent.max_utility=max(MetaAgent.max_utility, self.utility)
+        self.debug("je prend mais ne rends pas")
+        return 0
+
+
+

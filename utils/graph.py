@@ -12,11 +12,11 @@ class Representation:
     def __init__(self,**settings):
         plt.ion()
 
+        for k in settings.keys():
+            setattr(self,k,settings[k])
         fig=plt.figure(figsize=(self.draw_x,self.draw_y))
         self.canvas=fig.add_subplot(1,2,1)
         self.graph=fig.add_subplot(1,2,2)
-        for k,v in settings:
-            setattr(self,k,v)
         # force interactive
         self.plt=plt
 
@@ -35,9 +35,9 @@ class Representation:
     def show(self):
         self.plt.show()
 def test_repr():
-    r=Representation(  step=1, color ="green"  )
+    r=Representation(  step=1, color ="green"   )
     for i in range(0,10):
         for j in range(0, 10):
             r.dot(i,j, "#%d0%d0FF" % (i, j) )
     r.show()
-#test_repr()
+test_repr()

@@ -1,6 +1,6 @@
 #!/usr/bin/python
 from utils.matrix import matrix
-from utils.agent import Agent
+from utils.agent import *
 from utils.graph import Representation
 import pdb
 
@@ -10,24 +10,16 @@ class Universe:
     graph=None
     def __init__(self,size_x,size_y,**args):
         from random import randint as rand
-        pers=[ "only_take" , "boy_scout" ] 
         self.repres=Representation()
         for k in args.keys():
             setattr(self,k,args[k])
         self.matrix=matrix(size_x,size_y)
-
         for i in range(0,size_x):
             for j in range(0,size_y):   
+                  args=dict(x=i,y=j,utility=100,repres=self.repres)
                   self.matrix.set(
-                                i,j,
-                                Agent(x=i ,y=j ,
-                                        repres=self.repres,
-                                        personality = pers[ 
-                                            ## a mettre en param
-                                            rand(0,1 )
-                                        ],
-                                        utility = 100,
-                                    ),
+                                i,j, 
+                                BoyScout(**args)   if rand(0,1) else ToutPourMaGueule(**args)
                                 )
                   self.matrix.get(i,j).plot()
         for i in range(0,size_x):
@@ -45,25 +37,28 @@ class Universe:
 
         
     def draw(self):
+        for a in self.matrix.as_table():
+            a.plot()
         self.repres.draw()
     def show(self):
         self.repres.show()
 x=10
 y=10
 max_temp=1000
+draw_time=100
 u=Universe(x,y)
 res=dict()
-for k in Agent.personalities:
+for k in MetaAgent.personalities:
     res[k]=[]
 
 for i in range(0, max_temp):
     u.matrix.get_rand().interaction()
-    if ( i % 500 == 0):
+    if ( i % draw_time  == 0):
         u.draw()    
     res_temp=dict()
-    for k in Agent.personalities:
+    for k in MetaAgent.personalities:
         res_temp[k]=0
-    for agent in u.matrix.matrix[0:x*y]:
+    for agent in u.matrix.as_table():
         res_temp[agent.personality]= res_temp[agent.personality] + agent.utility
 
     u.repres.graph.clear()
@@ -73,6 +68,7 @@ for i in range(0, max_temp):
         res[perso].append(res_temp[perso])
         p.append(u.repres.graph.plot(res[perso]))
         keys.append("%s (%d)" % (perso, res_temp[perso]))
+
     u.repres.graph.legend(p,keys)
 
 
