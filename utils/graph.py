@@ -7,13 +7,16 @@ class Representation:
     canvas=None
     graph=None
     plt=None
+    draw_x=15
+    draw_y=10
     def __init__(self,**settings):
         plt.ion()
-        fig=plt.figure(figsize=(15,10))
+
+        fig=plt.figure(figsize=(self.draw_x,self.draw_y))
         self.canvas=fig.add_subplot(1,2,1)
         self.graph=fig.add_subplot(1,2,2)
-        for k in settings.keys():
-            setattr(self,k,settings[k])
+        for k,v in settings:
+            setattr(self,k,v)
         # force interactive
         self.plt=plt
 

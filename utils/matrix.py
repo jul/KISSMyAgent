@@ -1,5 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+
 class matrix:
     matrix=[]
     size_x=None
@@ -9,8 +10,7 @@ class matrix:
     def __init__(self,size_x,size_y):
         self.size_y=size_y
         self.size_x=size_x
-        for i in range(0,size_x*size_y  ):
-            self.matrix.append(None)
+        self.matrix= [ None for i in range(0,size_x*size_y) ]
 
     def get_rand(self):
         from random import randint 

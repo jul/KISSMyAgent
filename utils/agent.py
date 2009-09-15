@@ -1,5 +1,5 @@
 #!/usr/bin/python
-#_*_ unicode _*__
+#_*_ unicode _*_
 
     
 class Agent:
@@ -53,32 +53,33 @@ class Agent:
             #print "%s->%s" % (k,settings[k])
         Agent.max_utility=max(Agent.max_utility, self.utility)
         print "init %s\n" % self
-    def has_good_memorie(self):
-        return True
     
     def debug(self,msg=""):
         if Agent.debug:
-            msg= "%s(%d,%d) %s ::%s" % ( 
+            msg= "%s(%d,%d) %s :utilisty:%s::%s" % ( 
                self.id, 
                self.x,
                self.y,
                self.personality,
+               self.utility,
                msg)
             print msg
-
-    def interaction(self):
+    def choose_neighbor(self):
+        "choix par defaut=au hasard"
         from random import choice
+        return choice(self.neighbors)
+    
+    def interaction(self):
+        
         if self.personality == "only_take":
             self.debug(" on ne fait pas de commerce (pas fou)")
-           
+            return False
          #   return False
-        a_rand_neighbor=choice(self.neighbors)
-        self.debug("amount before transaction with %d : %d" % ( 
-            a_rand_neighbor.id,
-            self.utility
-            )
-            )
-
+        a_rand_neighbor=self.choose_neighbor()
+        if(a_rand_neighbor == False):
+            return False
+        ## est ce que l'on veut faire du commerce avec le voisin ?  
+        self.debug("amount before transaction with %d " % ( a_rand_neighbor.id) )
         ## on retire le montant de la transaction 
         self.utility-=self.transaction_amount
         ### on recupere le montant de la transaction + bonus ....
@@ -86,7 +87,6 @@ class Agent:
         self.utility+=a_rand_neighbor.transaction(self.transaction_amount)
         self.debug("utility after transaction : %d" % self.utility)
         Agent.max_utility=max(Agent.max_utility, self.utility)
-        self.plot()
         
     def transaction(self,amount):
         ## je prend l'objet 
@@ -95,7 +95,6 @@ class Agent:
         ### et je retourne le montant  ou pas 
         if self.personality == "only_take":
             # je me casse en courant
-
             return 0 
         else:
             ### je prend de mon larre feuille

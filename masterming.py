@@ -50,12 +50,13 @@ class Universe:
         self.repres.show()
 x=10
 y=10
+max_temp=1000
 u=Universe(x,y)
 res=dict()
 for k in Agent.personalities:
     res[k]=[]
 
-for i in range(0, 1000):
+for i in range(0, max_temp):
     u.matrix.get_rand().interaction()
     if ( i % 500 == 0):
         u.draw()    
