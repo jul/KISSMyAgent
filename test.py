@@ -19,6 +19,8 @@ little=(
 (1,0,-1),
 (1,1,45)
 )
+### même chose comme un tableau lineaire
+table=[ 0, -1, 2, 45 ]
 class TestMatrix(unittest.TestCase):
     m=None
     def setUp(self):
@@ -37,7 +39,6 @@ class TestMatrix(unittest.TestCase):
 
     def test_as_table(self):
         m=matrix(2,2)
-        table=[ 0, -1, 2, 45 ]
         print table
         for x,y,value in little:
             m.set(x,y,value)

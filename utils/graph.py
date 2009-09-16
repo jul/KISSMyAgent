@@ -7,7 +7,7 @@ class Representation:
     canvas=None
     graph=None
     plt=None
-    draw_x=15
+    draw_x=20
     draw_y=10
     def __init__(self,**settings):
         plt.ion()
@@ -40,4 +40,5 @@ def test_repr():
         for j in range(0, 10):
             r.dot(i,j, "#%d0%d0FF" % (i, j) )
     r.show()
-test_repr()
+if __name__ == '__main__':
+    test_repr()

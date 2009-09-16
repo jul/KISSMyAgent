@@ -24,13 +24,13 @@ class MetaAgent:
     def __repr__(self):
         return "<repres : %d,%d,%s>" % (self.x,self.y,self.repres)
     def coord(self,x=None,y=None):
-        if (x != None and y != None):
-            return (x,y)
+        if (x == None and y == None):
+            return (self.x,self.y)
         else:
             self.x=x
             self.y=y
 
-    def plot(self):
+    def color(self):
         self.debug("%d , %d " % (self.utility, self.max_utility) )
         color = (
                  ( 0xff - int (   (  1.0 * 0xff  *  self.utility / self.max_utility) ) ) << 8 & 0x00ff00
@@ -38,7 +38,7 @@ class MetaAgent:
                 ) 
             
         self.debug( " color : #%06x\n" % color)
-        self.repres.dot(self.x,self.y, "#%06x" % color)
+        return( "#%06x" % color)
 
     def __init__(self,**settings):
         MetaAgent.max_id=MetaAgent.max_id+1
@@ -49,7 +49,7 @@ class MetaAgent:
         MetaAgent.max_utility=max(MetaAgent.max_utility, self.utility)
         if self.personality not in self.personalities:
             self.personalities+=[ self.personality ]
-        print "init %s\n" % self
+        #print "init %s\n" % self
     
     def debug(self,msg=""):
         if self.to_debug:
@@ -99,7 +99,6 @@ class MetaAgent:
 class BoyScout(MetaAgent):
     def __init__(self,**kwargs):
         kwargs["personality"]="BoyScout"
-        print kwargs
         MetaAgent.__init__(self,**kwargs)
 
 class ToutPourMaGueule(MetaAgent):

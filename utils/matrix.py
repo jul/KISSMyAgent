@@ -54,4 +54,5 @@ résultat souhaité :
 0 1 2 3
 1 X 7 X
 """)
-matrix_check()
+if __name__ == '__main__':
+    matrix_check()
