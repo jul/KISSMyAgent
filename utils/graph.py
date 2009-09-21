@@ -4,8 +4,11 @@ from matplotlib import figure
 class Representation:
     step = 1
     color="red"
-    canvas=None
-    graph=None
+    canvas=[]
+    nb_canvas=1
+    nb_graph=1
+    universe = []
+    graph=[]
     plt=None
     draw_x=20
     draw_y=10
@@ -15,22 +18,42 @@ class Representation:
         for k in settings.keys():
             setattr(self,k,settings[k])
         fig=plt.figure(figsize=(self.draw_x,self.draw_y))
-        self.canvas=fig.add_subplot(1,2,1)
-        self.graph=fig.add_subplot(1,2,2)
+        total=self.nb_graph + self.nb_canvas 
+        curseur = 1
+        for i in range(0,self.nb_canvas):
+            self.canvas += [ fig.add_subplot(1,total,curseur) ]
+            print " adding one canvas"
+            curseur+=1
+        for i in range(0,self.nb_graph):
+            self.graph += [ fig.add_subplot(1,total,curseur) ]
+            print " adding one graph"
+
+            curseur+=1
         # force interactive
+        print "total %d " % total
         self.plt=plt
 
-    def dot(self, x, y, color):
+    def plot_universe(self,index=0):
+        for ag in self.universe[index].matrix.as_table():
+            self.dot(ag.x, ag.y,ag.color(),index)
+
+
+
+    
+    def dot(self, x, y, color,index=0):
         d=self.step - .1 * self.step
-        self.canvas.fill( 
+        self.canvas[index].fill( 
             [ x,    x,      x + d,  x + d],
             [ y ,   y + d,  y + d,  y ],
             color if color else self.color
             )
 
+    def clear(self):
+        for g in self.graph:
+            g.clear()
+
     def draw(self):
         self.plt.draw()
-        self.canvas.draw()
 
     def show(self):
         self.plt.show()

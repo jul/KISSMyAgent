@@ -1,27 +1,26 @@
 #!/usr/bin/python
+# -*- coding: utf-8 -*-
 from utils.matrix import matrix
 from utils.agent import *
 from utils.graph import Representation
+import numpy as np
 import pdb
 
 class Universe:
+    "gère le temps et l'espace pour une simulation"
     matrix=None
     repres=None
     graph=None
-
-    def plot(self,i,j):
-        self.repres.dot(i,j,self.matrix.get(i,j).color())
-
-    def plot_agent(self,agent=None):
-        x,y = agent.coord()
-        self.repres.dot(x,y,agent.color())
+    temp=1000
+    
         
     def __init__(self,size_x,size_y,**args):
         from random import randint as rand
-        self.repres=Representation()
+        
         for k in args.keys():
             setattr(self,k,args[k])
         self.matrix=matrix(size_x,size_y)
+        ### init agent
         for i in range(0,size_x):
             for j in range(0,size_y):   
                   args=dict(x=i,y=j,utility=100)
@@ -29,7 +28,7 @@ class Universe:
                                 i,j, 
                                 BoyScout(**args)   if rand(0,1) else ToutPourMaGueule(**args)
                                 )
-                  self.plot(i,j)
+        ## init voisinage
         for i in range(0,size_x):
             for j in range(0,size_y):   
                 neigb=[]
@@ -42,43 +41,58 @@ class Universe:
                         )
 
                 self.matrix.get(i,j).neighbors=neigb
+    
+    def next(self):
+        self.matrix.get_rand().interaction()
+        self.temp-=1 
+        return self.temp >= 0
 
         
-    def draw(self):
-        for a in self.matrix.as_table():
-            print a
-            self.plot_agent(a)
-        self.repres.draw()
-    def show(self):
-        self.repres.show()
-x=20
-y=20
-max_temp=2000
-draw_time=100
-u=Universe(x,y)
+x=7
+y=7
+draw_time=400
+u=Universe(x,y,temp=4000)
+Desktop=Representation(universe=[ u ],nb_canvas=1,nb_graph=2)
+Moyenne=Desktop.graph[0]
+Total=Desktop.graph[1]
+
+
+i=0
 res=dict()
 for k in MetaAgent.personalities:
     res[k]=[]
-
-for i in range(0, max_temp):
-    u.matrix.get_rand().interaction()
-    if ( i % draw_time  == 0):
-        u.draw()    
+while u.next():
+    i+=1
     res_temp=dict()
+    perso_count=dict()
     for k in MetaAgent.personalities:
         res_temp[k]=0
+        perso_count[k]=0
     for agent in u.matrix.as_table():
         res_temp[agent.personality]= res_temp[agent.personality] + agent.utility
+        perso_count[agent.personality] += 1
 
-    u.repres.graph.clear()
+
     p=[]
     keys=[]
+    m=[]
+    m_keys=[]
     for perso in res_temp.keys():
         res[perso].append(res_temp[perso])
-        p.append(u.repres.graph.plot(res[perso]))
-        keys.append("%s (%d)" % (perso, res_temp[perso]))
-
-    u.repres.graph.legend(p,keys)
 
 
-u.show()
+    if ( i % draw_time  == 0):
+        Desktop.clear()
+        for perso in res_temp.keys():
+            p += [ Total.plot(res[perso])] 
+            keys += [ "Total : %s (%d)" % (perso, res_temp[perso]) ]
+        Total.legend(p,keys)
+        for perso in res_temp.keys():
+            m += [ Moyenne.plot( [ r/perso_count[perso] for r in res[perso] ]  )  ] 
+            m_keys += [ "Moyenne : %s (%f)" % (perso, 1.0 * res_temp[perso] / perso_count[perso]  ) ]
+        Moyenne.legend(m,m_keys)
+        Desktop.plot_universe()
+        Desktop.draw()    
+
+
+Desktop.show()
