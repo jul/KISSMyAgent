@@ -17,10 +17,14 @@ class MetaAgent:
     memory=dict()
     transaction_amount=10
     personalities=[]
+    utility=50
+    init_val=dict()
     max_utility=0
-    added_value_per_transaction=5
+    can_bankrupt=True
+    current_partner=None
+    added_value_for_buyer=0
+    added_value_for_seller=5
     pers_color_mask= 0x0000FF
-    
     def __repr__(self):
         return "<repres : %d,%d,%s>" % (self.x,self.y,self.repres)
     def coord(self,x=None,y=None):
@@ -36,13 +40,25 @@ class MetaAgent:
                  ( 0xff - int (   (  1.0 * 0xff  *  self.utility / self.max_utility) ) ) << 8 & 0x00ff00
                  |  self.pers_color_mask
                 ) 
-            
         self.debug( " color : #%06x\n" % color)
         return( "#%06x" % color)
+
+    def clone(self,**change):
+        arg=dict()
+        for k in self.init_val.keys():
+            arg[k]=self.init_val[k]
+        for k in change.keys():
+            arg[k]=change[k]
+        self.debug("avant")
+
+        c=self.__class__(**arg)
+        c.debug("apres")
+        return c
 
     def __init__(self,**settings):
         MetaAgent.max_id=MetaAgent.max_id+1
         self.id=MetaAgent.max_id
+        self.init_val=settings
         for k in settings.keys():
             setattr(self,k,settings[k])
             #print "%s->%s" % (k,settings[k])
@@ -50,7 +66,7 @@ class MetaAgent:
         if self.personality not in self.personalities:
             self.personalities+=[ self.personality ]
         #print "init %s\n" % self
-    
+
     def debug(self,msg=""):
         if self.to_debug:
             msg= "%s(%d,%d) %s :utilisty:%s::%s" % ( 
@@ -64,30 +80,40 @@ class MetaAgent:
     def choose_neighbor(self):
         "choix par defaut=au hasard"
         from random import choice
-        return choice(self.neighbors)
-    
-    def interaction(self):
-        
-        a_rand_neighbor=self.choose_neighbor()
+        self.current_partner=choice(self.neighbors)
+        return self.current_partner
+    def deal_with(self,partner):
         ## est ce que l'on veut faire du commerce avec le voisin ?  
-        if(a_rand_neighbor == False):
+        if( not partner ):
             return False
-        self.debug("amount before transaction with %d " % ( a_rand_neighbor.id) )
+        self.debug("amount before transaction with %d " % ( partner.id) )
         ## on retire le montant de la transaction 
         self.utility-=self.transaction_amount
         ### on recupere le montant de la transaction + bonus ....
         ### eventuellement 
-        self.utility+=a_rand_neighbor.transaction(self.transaction_amount)
+        self.utility+=partner.transaction(self.transaction_amount)
         self.debug("utility after transaction : %d" % self.utility)
         MetaAgent.max_utility=max(MetaAgent.max_utility, self.utility)
-        
+
+    def interaction(self,agent=None):
+        if self.can_bankrupt and self.utility <= 0:
+            self.debug("Bankrupt")
+            self.current_partner = None
+            return False
+
+        self.current_partner = agent if agent else self.choose_neighbor()
+        self.deal_with(self.current_partner)
     def transaction(self,amount):
-        ## je prend l'objet 
-        self.utility+=amount
-        self.debug("transaction made I get %d" % amount)
+    ### I am the buyer
+        if self.can_bankrupt and self.utility <= amount + self.added_value_for_seller:
+            return 0
+
+        self.utility -=  amount 
+        self.utility += self.added_value_for_buyer 
+        self.debug("transaction made I give %d" %  ( amount + self.added_value_for_seller) )
         ### je prend de mon larre feuille
         ### et je paie
-        return self.added_value_per_transaction + amount
+        return self.added_value_for_seller + amount
 
 
     def __str__(self):
@@ -96,19 +122,21 @@ class MetaAgent:
         if self.utility:
             msg+="%d,%d//id=%d//utility:%s//pers:%s\n" %  (self.x, self.y,self.id, str(self.utility),self.personality)
         return msg
-class BoyScout(MetaAgent):
-    def __init__(self,**kwargs):
-        kwargs["personality"]="BoyScout"
-        MetaAgent.__init__(self,**kwargs)
 
 class ToutPourMaGueule(MetaAgent):
     def __init__(self,**kwargs):
         kwargs["personality"]="ToutPourMaGueule"
         kwargs["pers_color_mask"]=0xCC0000
-        MetaAgent.__init__(self,**kwargs)
+        self=MetaAgent.__init__(self,**kwargs)
+
 
     def choose_neighbor(self):
         self.debug("on fait pas de commerce")
+        self.current_partner=None
+        return False
+
+    def deal_with(self,agent=None):
+        self.debug("Pas de deal")
         return False
 
     def transaction(self,amount):
@@ -116,6 +144,11 @@ class ToutPourMaGueule(MetaAgent):
         MetaAgent.max_utility=max(MetaAgent.max_utility, self.utility)
         self.debug("je prend mais ne rends pas")
         return 0
+
+class BoyScout(MetaAgent):
+    def __init__(self,**kwargs):
+        kwargs["personality"]="Confiant"
+        MetaAgent.__init__(self,**kwargs)
 
 
 

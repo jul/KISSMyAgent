@@ -4,44 +4,64 @@ from utils.matrix import matrix
 from utils.agent import *
 import numpy as np
 
+UP = ( 0,1 )
+DOWN= (0,-1)
+LEFT= ( 1, 0)
+RIGHT = ( -1, 0 ) 
+DIRECTIONS= ( UP, DOWN,LEFT, RIGHT )
 class Universe:
     "gère le temps et l'espace pour une simulation"
     matrix=None
+    size_x=10
+    size_y=10
     repres=None
     graph=None
-    temp=1000
+    temp=4000
+    agent_args=dict()
+    current_agent=None
     
         
-    def __init__(self,size_x,size_y,**args):
+    def __init__(self,**args):
         from random import randint as rand
         
         for k in args.keys():
             setattr(self,k,args[k])
-        self.matrix=matrix(size_x,size_y)
+        x=self.size_x
+        y=self.size_y
+        self.matrix=matrix(x,y)
         ### init agent
-        for i in range(0,size_x):
-            for j in range(0,size_y):   
-                  args=dict(x=i,y=j,utility=100)
+        for i in range(0,x):
+            for j in range(0,y):   
+                  args=self.agent_args
+                  args["x"]=i
+                  args["y"]=j
+                  print args
+
                   self.matrix.set(
                                 i,j, 
                                 BoyScout(**args)   if rand(0,1) else ToutPourMaGueule(**args)
                                 )
         ## init voisinage
-        for i in range(0,size_x):
-            for j in range(0,size_y):   
+        self.set_neighb()
+
+    def set_neighb(self):
+        for i in range(0,self.size_x):
+            for j in range(0,self.size_y):   
                 neigb=[]
-                for coord in ( (0,1), (1,0), (-1,0), (0,-1) ):
+                for coord in DIRECTIONS:
                         dx,dy=coord
                         neigb.append(self.matrix.get(
-                            (i+dx)%size_x,
-                            (j+dy)%size_y
+                            (i+dx)%self.size_x,
+                            (j+dy)%self.size_y
                             )
                         )
 
                 self.matrix.get(i,j).neighbors=neigb
+        
     
     def next(self):
-        self.matrix.get_rand().interaction()
+        self.current_agent=self.matrix.get_rand()
+        self.current_agent.interaction()
         self.temp-=1 
         return self.temp >= 0
 

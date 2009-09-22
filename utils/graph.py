@@ -10,14 +10,14 @@ class Representation:
     universe = []
     graph=[]
     plt=None
-    draw_x=20
-    draw_y=10
+    x=20
+    y=10
     def __init__(self,**settings):
         plt.ion()
 
         for k in settings.keys():
             setattr(self,k,settings[k])
-        fig=plt.figure(figsize=(self.draw_x,self.draw_y))
+        fig=plt.figure(figsize=(self.x,self.y))
         total=self.nb_graph + self.nb_canvas 
         curseur = 1
         for i in range(0,self.nb_canvas):
