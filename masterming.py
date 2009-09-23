@@ -7,23 +7,23 @@ from utils.universe import Universe
 import numpy as np
 import pdb
 
-x=20
-y=20
-draw_time=1000
+x=4
+y=4
+draw_time=200
 args=dict( size_x= x, 
            title="Without Bankrupty (wo_b)",
            size_y= y, 
-           pct_bs=70,
+           pct_bs=50,
            agent_args= dict(
                # 1 de VA finales par transaction
-               added_value_for_seller=11,
+               added_value_for_seller=12,
                amount_per_transaction=10,
-               added_value_for_buyer=0,
+               added_value_for_buyer=1,
                to_debug=True,
                can_bankrupt=False,
                utility=100,
            ),
-           temp= 30000 )
+           temp= 10000 )
 
 u=Universe(**args)
 

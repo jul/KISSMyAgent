@@ -48,9 +48,18 @@ class TestMatrix(unittest.TestCase):
 class TestAgent(unittest.TestCase):
     buyer=None
     seller= None
+    richer_s=None
+    richer_b=None
+
     tpmg=None
+    richer_args=dict( 
+               utility=100,
+               added_value_for_seller=11,
+               added_value_for_buyer=1,
+               can_bankrupt=False,
+               amount_per_transaction=10 ,
+               to_debug=True)
     args=dict( 
-              
                utility=100,
                added_value_for_seller=0,
                added_value_for_buyer=0,
@@ -64,10 +73,23 @@ class TestAgent(unittest.TestCase):
         self.buyer.neighbors= [ self.seller ]
         self.seller.neighbors= [ self.buyer ]
         self.tpmg=ToutPourMaGueule(x=0,y=0,**self.args)
+        self.richer_b=BoyScout(x=2,y=2,**self.richer_args)
+        self.richer_s=BoyScout(x=2,y=3,**self.richer_args)
+        self.richer_s.neighbors=[ self.richer_b ]
+        self.richer_b.neighbors=[ self.richer_s ]
+
         self.tpmg.neighbors = [ self.buyer ]
 
+    def test_getting_richer(self):
+        """Condition in which wealth grow + discount"""
+        print "RICH"
+        self.richer_s.interaction()
+        self.assertEqual(self.richer_s.utility,111)
+        self.assertEqual(self.richer_b.utility,91)
+        print "ERICH"
+
     def test_simple_transac(self):
-        " test simple transac && color"
+        " test simple transfer (no utility added) && color"
         print "ST\n"
         MetaAgent.max_utility=0
         self.seller.interaction()
@@ -75,9 +97,10 @@ class TestAgent(unittest.TestCase):
         self.assertEqual(self.buyer.utility,90)
         self.assertEqual(MetaAgent.max_utility,100)
         self.assertEqual(self.seller.color(),"#0000ff")
-        for i in range(0,101,10):
+        MetaAgent.min_utility=-100
+        for i in range(-100,101,10):
             self.buyer.utility=i
-            expected_color="#00%02xff" %  (  0xff - int(1.0 * i / 100 * 255))
+            expected_color="#00%02xff" %  (  0xff - int(1.0 * ( i +100) / 200 * 255))
             print "buyer utility : %03d -> %s" % ( i,expected_color )
 
             self.assertEqual(self.buyer.color(),expected_color)

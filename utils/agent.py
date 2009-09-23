@@ -95,7 +95,7 @@ class MetaAgent:
     def deal_with(self,partner):
         ## est ce que l'on veut faire du commerce avec le voisin ?  
         if( not partner ):
-            return False
+            return amount
         self.debug("amount before transaction with %d " % ( partner.id) )
         ## on retire le montant de la transaction 
         self.utility-=self.transaction_amount
@@ -108,7 +108,6 @@ class MetaAgent:
 
     def interaction(self,agent=None):
         if self.can_bankrupt and self.utility <= 0:
-            self.debug("Bankrupt")
             self.current_partner = None
             return False
 
@@ -117,7 +116,7 @@ class MetaAgent:
     def transaction(self,amount):
     ### I am the buyer
         if self.can_bankrupt and self.utility <= amount:
-            return 0
+            return amount
 
         self.utility -=  amount 
         self.utility += self.added_value_for_buyer 
