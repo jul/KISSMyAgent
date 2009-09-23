@@ -8,7 +8,7 @@ class MetaAgent:
     stat=None 
     personality="naive"
     x=None
-    to_debug=False
+    to_debug=True
     y=None
     max_id=0
     repres=None
@@ -22,8 +22,8 @@ class MetaAgent:
     max_utility=0
     can_bankrupt=True
     current_partner=None
-    added_value_for_buyer=0
-    added_value_for_seller=5
+    added_value_for_buyer=1
+    added_value_for_seller=9
     pers_color_mask= 0x0000FF
     def __repr__(self):
         return "<repres : %d,%d,%s>" % (self.x,self.y,self.repres)
@@ -35,12 +35,18 @@ class MetaAgent:
             self.y=y
 
     def color(self):
-        self.debug("%d , %d " % (self.utility, self.max_utility) )
+        #self.debug("%d , %d " % (self.utility, self.max_utility) )
         color = (
-                 ( 0xff - int (   (  1.0 * 0xff  *  self.utility / self.max_utility) ) ) << 8 & 0x00ff00
-                 |  self.pers_color_mask
-                ) 
-        self.debug( " color : #%06x\n" % color)
+            (
+                 ( 0xff - 
+                   int (   
+                    (  1.0 * 0xff  *  self.utility / self.max_utility) 
+                    ) 
+                 ) << 8 & 0x00ff00
+            )
+            |  self.pers_color_mask
+        ) 
+        #self.debug( " color : #%06x\n" % color)
         return( "#%06x" % color)
 
     def clone(self,**change):
@@ -105,7 +111,7 @@ class MetaAgent:
         self.deal_with(self.current_partner)
     def transaction(self,amount):
     ### I am the buyer
-        if self.can_bankrupt and self.utility <= amount + self.added_value_for_seller:
+        if self.can_bankrupt and self.utility <= amount:
             return 0
 
         self.utility -=  amount 

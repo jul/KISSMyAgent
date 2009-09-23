@@ -16,7 +16,9 @@ class Universe:
     size_y=10
     repres=None
     graph=None
+    title=None
     temp=4000
+    pct_bs=50
     agent_args=dict()
     current_agent=None
     
@@ -35,12 +37,11 @@ class Universe:
                   args=self.agent_args
                   args["x"]=i
                   args["y"]=j
-                  print args
 
                   self.matrix.set(
-                                i,j, 
-                                BoyScout(**args)   if rand(0,1) else ToutPourMaGueule(**args)
-                                )
+                    i,j, 
+                    BoyScout(**args) if rand(0,101) <= self.pct_bs  else ToutPourMaGueule(**args)
+                 )
         ## init voisinage
         self.set_neighb()
 

@@ -27,8 +27,8 @@ class Representation:
         for i in range(0,self.nb_graph):
             self.graph += [ fig.add_subplot(1,total,curseur) ]
             print " adding one graph"
-
             curseur+=1
+        fig.subplots_adjust(bottom=.2)
         # force interactive
         print "total %d " % total
         self.plt=plt
@@ -36,6 +36,8 @@ class Representation:
     def plot_universe(self,index=0):
         for ag in self.universe[index].matrix.as_table():
             self.dot(ag.x, ag.y,ag.color(),index)
+        if self.universe[index].title:
+            self.canvas[index].set_title(self.universe[index].title)
 
 
 
