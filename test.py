@@ -66,12 +66,23 @@ class TestAgent(unittest.TestCase):
         self.tpmg=ToutPourMaGueule(x=0,y=0,**self.args)
         self.tpmg.neighbors = [ self.buyer ]
 
-
     def test_simple_transac(self):
+        " test simple transac && color"
         print "ST\n"
-        self.buyer.interaction()
-        self.assertEqual(self.buyer.utility,100)
-        self.assertEqual(self.seller.utility,90)
+        MetaAgent.max_utility=0
+        self.seller.interaction()
+        self.assertEqual(self.seller.utility,100)
+        self.assertEqual(self.buyer.utility,90)
+        self.assertEqual(MetaAgent.max_utility,100)
+        self.assertEqual(self.seller.color(),"#0000ff")
+        for i in range(0,101,10):
+            self.buyer.utility=i
+            expected_color="#00%02xff" %  (  0xff - int(1.0 * i / 100 * 255))
+            print "buyer utility : %03d -> %s" % ( i,expected_color )
+
+            self.assertEqual(self.buyer.color(),expected_color)
+            
+
         print "\n"
 
         

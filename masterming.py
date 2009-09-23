@@ -7,9 +7,9 @@ from utils.universe import Universe
 import numpy as np
 import pdb
 
-x=10
-y=10
-draw_time=200
+x=20
+y=20
+draw_time=1000
 args=dict( size_x= x, 
            title="Without Bankrupty (wo_b)",
            size_y= y, 
@@ -23,7 +23,7 @@ args=dict( size_x= x,
                can_bankrupt=False,
                utility=100,
            ),
-           temp= 6000 )
+           temp= 30000 )
 
 u=Universe(**args)
 
