@@ -20,6 +20,7 @@ class MetaAgent:
     utility=50
     init_val=dict()
     max_utility=0
+    min_utility=0
     can_bankrupt=True
     current_partner=None
     added_value_for_buyer=1
@@ -36,11 +37,13 @@ class MetaAgent:
 
     def color(self):
         #self.debug("%d , %d " % (self.utility, self.max_utility) )
+        assert(self.utility <= MetaAgent.max_utility )
+        ratio_to_max= 1.0 * ( self.utility - MetaAgent.min_utility ) / (MetaAgent.max_utility - MetaAgent.min_utility ) 
         color = (
             (
-                 ( 0xff - 
+                 ( 0x00ff - 
                    int (   
-                    (  1.0 * 0xff  *  self.utility / self.max_utility) 
+                    (  ratio_to_max * 0x00ff   ) 
                     ) 
                  ) << 8 & 0x00ff00
             )
@@ -69,6 +72,7 @@ class MetaAgent:
             setattr(self,k,settings[k])
             #print "%s->%s" % (k,settings[k])
         MetaAgent.max_utility=max(MetaAgent.max_utility, self.utility)
+        MetaAgent.min_utility=min(MetaAgent.min_utility, self.utility)
         if self.personality not in self.personalities:
             self.personalities+=[ self.personality ]
         #print "init %s\n" % self
@@ -100,6 +104,7 @@ class MetaAgent:
         self.utility+=partner.transaction(self.transaction_amount)
         self.debug("utility after transaction : %d" % self.utility)
         MetaAgent.max_utility=max(MetaAgent.max_utility, self.utility)
+        MetaAgent.min_utility=min(MetaAgent.min_utility, self.utility)
 
     def interaction(self,agent=None):
         if self.can_bankrupt and self.utility <= 0:
@@ -148,6 +153,7 @@ class ToutPourMaGueule(MetaAgent):
     def transaction(self,amount):
         self.utility+=amount
         MetaAgent.max_utility=max(MetaAgent.max_utility, self.utility)
+        MetaAgent.min_utility=min(MetaAgent.min_utility, self.utility)
         self.debug("je prend mais ne rends pas")
         return 0
 
