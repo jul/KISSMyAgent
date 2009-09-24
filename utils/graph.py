@@ -11,6 +11,7 @@ class Representation:
     graph=[]
     plt=None
     x=20
+    fig=None
     y=10
     def __init__(self,**settings):
         plt.ion()
@@ -32,6 +33,7 @@ class Representation:
         # force interactive
         print "total %d " % total
         self.plt=plt
+        self.fig=fig
 
     def plot_universe(self,index=0):
         for ag in self.universe[index].matrix.as_table():

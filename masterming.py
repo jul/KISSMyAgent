@@ -13,7 +13,7 @@ draw_time=200
 args=dict( size_x= x, 
            title="Without Bankrupty (wo_b)",
            size_y= y, 
-           pct_bs=50,
+           pct_bs=40,
            agent_args= dict(
                # 1 de VA finales par transaction
                added_value_for_seller=12,
@@ -24,7 +24,6 @@ args=dict( size_x= x,
                utility=100,
            ),
            temp= 10000 )
-
 u=Universe(**args)
 args["title"]="With Bankrupty (w_b)"
 u2=Universe(**args)
@@ -32,6 +31,11 @@ args["title"]="Fail before Banrukpt (f_b)"
 u3=Universe(**args)
 
 Desktop=Representation(universe=[ u,u2,u3 ],nb_canvas=3,nb_graph=2,x=20,y=12)
+Desktop.fig.text(.3,.95,
+    "Effect of bankrupty and unsolvability on a word of transaction (%d %% collectors)" % 
+    ( 100 - args["pct_bs"] ),
+    fontsize=18
+)
 Moyenne=Desktop.graph[0]
 Total=Desktop.graph[1]
 #Moyenne_p=Desktop.graph[2]
@@ -160,6 +164,9 @@ while u.next():
             ]
 
         small_leg(Moyenne.legend(m,m_keys,loc=under_graph))
+        Moyenne.set_xticks( range(0, i + 1, i>>2 ))
+        Total.set_xticks( range(0, i+1, i>>2 ))
+
         Desktop.plot_universe(0)
         Desktop.plot_universe(1)
         Desktop.plot_universe(2)
