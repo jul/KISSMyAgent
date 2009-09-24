@@ -25,6 +25,7 @@ class MetaAgent:
     current_partner=None
     added_value_for_buyer=1
     added_value_for_seller=9
+    fail_before_bankrupcy = False
     pers_color_mask= 0x0000FF
     def __repr__(self):
         return "<repres : %d,%d,%s>" % (self.x,self.y,self.repres)
@@ -95,7 +96,7 @@ class MetaAgent:
     def deal_with(self,partner):
         ## est ce que l'on veut faire du commerce avec le voisin ?  
         if( not partner ):
-            return amount
+            return 0 
         self.debug("amount before transaction with %d " % ( partner.id) )
         ## on retire le montant de la transaction 
         self.utility-=self.transaction_amount
@@ -116,7 +117,7 @@ class MetaAgent:
     def transaction(self,amount):
     ### I am the buyer
         if self.can_bankrupt and self.utility <= amount:
-            return amount
+            return 0 if self.fail_before_bankrupcy else amount
 
         self.utility -=  amount 
         self.utility += self.added_value_for_buyer 
