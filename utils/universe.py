@@ -40,7 +40,7 @@ class Universe:
 
                   self.matrix.set(
                     i,j, 
-                    BoyScout(**args) if rand(0,101) <= self.pct_bs  else ToutPourMaGueule(**args)
+                    BoyScout(**args) if ( rand(0,101) <= self.pct_bs )  else ToutPourMaGueule(**args)
                  )
         ## init voisinage
         self.set_neighb()

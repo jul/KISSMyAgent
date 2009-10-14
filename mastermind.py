@@ -32,7 +32,7 @@ u3=Universe(**args)
 
 Desktop=Representation(universe=[ u,u2,u3 ],nb_canvas=3,nb_graph=2,x=20,y=12)
 Desktop.fig.text(.3,.95,
-    "Effect of bankrupty and unsolvability on a word of transaction (%d %% collectors)" % 
+    "Effect of bankrupty and unsolvability on a world of transaction (%d %% collectors)" % 
     ( 100 - args["pct_bs"] ),
     fontsize=18
 )
