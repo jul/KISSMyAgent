@@ -13,7 +13,7 @@ draw_time=200
 args=dict( size_x= x, 
            title="Without Bankrupty (wo_b)",
            size_y= y, 
-           pct_bs=40,
+           pct_bs=30,
            agent_args= dict(
                # 1 de VA finales par transaction
                added_value_for_seller=12,
@@ -32,7 +32,7 @@ u3=Universe(**args)
 
 Desktop=Representation(universe=[ u,u2,u3 ],nb_canvas=3,nb_graph=2,x=20,y=12)
 Desktop.fig.text(.3,.95,
-    "Effect of bankrupty and unsolvability on a world of transaction (%d %% collectors)" % 
+    "Effect of bankrupty and unsolvability on a world of transactions (%d %% collectors)" % 
     ( 100 - args["pct_bs"] ),
     fontsize=18
 )
@@ -136,7 +136,7 @@ while u.next():
     
         for grid in wealth.keys():
             p += [ Total.plot(wealth[grid] )] 
-            keys += [ "ratio of initweal in %s" % grid ]
+            keys += [ "ratio of initwealth in %s" % grid ]
         Total.legend(p,keys,loc=under_graph)
         
         m=[]
